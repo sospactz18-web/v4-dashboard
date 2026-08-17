@@ -173,6 +173,43 @@
                 console.error("Error fetching data:", err);
             }
         }
-    </script>
+    </script>async function refreshData() {
+    const btn = document.querySelector('.btn');
+    btn.innerText = '⏳ Updating...';
+
+    try {
+        // Weka URL ya backend API yako hapa
+        const response = await fetch('YOUR_BACKEND_API_URL/api/latest-signal');
+        const data = await response.json();
+
+        // 1. Badilisha Currency Pair & Direction
+        document.getElementById('pair').innerText = data.pair; // Mfano: "EUR/USD OTC"
+        document.getElementById('direction').innerText = `${data.direction} (${data.timeframe})`;
+
+        // 2. Badilisha Direction Badge Color
+        const dirElement = document.getElementById('direction');
+        if (data.direction.toUpperCase() === 'BUY') {
+            dirElement.className = 'badge badge-buy';
+        } else if (data.direction.toUpperCase() === 'SELL') {
+            dirElement.className = 'badge badge-sell';
+        } else {
+            dirElement.className = 'badge badge-wait';
+        }
+
+        // 3. Badilisha AI Confidence
+        document.getElementById('confidence-text').innerText = `${data.confidence}%`;
+        document.getElementById('confidence-bar').style.width = `${data.confidence}%`;
+
+        // 4. Badilisha Recommended Action & Reason
+        document.getElementById('action').innerText = data.action;
+        document.getElementById('reason').innerText = data.reason;
+
+    } catch (err) {
+        console.error("Error fetching signal:", err);
+        alert("Failed to fetch live signal. Check backend status.");
+    } finally {
+        btn.innerText = '🔄 Refresh Live Signal';
+    }
+}
 </body>
 </html>
