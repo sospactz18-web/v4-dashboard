@@ -1,26 +1,20 @@
-import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # Muhimu sana kuzuia Error kwenye Telegram
 
 @app.route('/')
 def home():
     return jsonify({"status": "V4 Engine API is running live!"})
 
-@app.route('/api/latest-signal', methods=['GET'])
-def get_signal():
-    signal_data = {
+# Weka au rekebisha endpoint hii:
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    return jsonify({
         "pair": "EUR/USD OTC",
-        "direction": "BUY",
-        "timeframe": "5M",
-        "confidence": 88,
-        "action": "EXECUTE BUY NOW",
-        "reason": "V4 Engine Signal Verified"
-    }
-    return jsonify(signal_data)
+        "direction": "BUY"  # au "SELL" / "WAIT"
+    })
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run()
