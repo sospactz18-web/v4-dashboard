@@ -1,46 +1,33 @@
-<script>
-        // Init Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+// Init Telegram WebApp
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-        async function refreshData() {
-            const btn = document.querySelector('.btn');
-            btn.innerText = '⏳ Updating...';
+async function refreshData() {
+    const btn = document.querySelector('.btn');
+    btn.innerText = '⏳ Updating...';
 
-            try {
-                // Badilisha URL hii kuweka URL ya backend API yako (mfano ya Render au Localhost ngrok)
-                const response = await fetch('YOUR_BACKEND_API_URL/api/latest-signal');
-                const data = await response.json();
+    try {
+        // API URL ya Backend yako kwenye Render
+        const response = await fetch('https://v4-engine.onrender.com/api/data');
+        const data = await response.json();
 
-                // 1. Update Pair & Direction
-                document.getElementById('pair').innerText = data.pair;
-                document.getElementById('direction').innerText = `${data.direction} (${data.timeframe})`;
+        // 1. Update Pair & Direction
+        document.getElementById('pair').innerText = data.pair || '--';
+        document.getElementById('direction').innerText = data.direction || '--';
 
-                // 2. Update Badge Color
-                const dirElement = document.getElementById('direction');
-                if (data.direction.toUpperCase() === 'BUY') {
-                    dirElement.className = 'badge badge-buy';
-                } else if (data.direction.toUpperCase() === 'SELL') {
-                    dirElement.className = 'badge badge-sell';
-                } else {
-                    dirElement.className = 'badge badge-wait';
-                }
-
-                // 3. Update Confidence
-                document.getElementById('confidence-text').innerText = `${data.confidence}%`;
-                document.getElementById('confidence-bar').style.width = `${data.confidence}%`;
-
-                // 4. Update Action & Reason
-                document.getElementById('action').innerText = data.action;
-                document.getElementById('reason').innerText = data.reason;
-
-            } catch (err) {
-                console.error("Error fetching signal:", err);
-                alert("Failed to fetch live signal. Please check backend API.");
-            } finally {
-                btn.innerText = '🔄 Refresh Live Signal';
-            }
+        // 2. Update Badge Color
+        const dirElement = document.getElementById('direction');
+        if (data.direction && data.direction.toUpperCase() === 'BUY') {
+            dirElement.className = 'badge badge-buy';
+        } else if (data.direction && data.direction.toUpperCase() === 'SELL') {
+            dirElement.className = 'badge badge-sell';
+        } else {
+            dirElement.className = 'badge badge-warning';
         }
-    </script>
-</body>
-</html>
+
+        btn.innerText = '🔄 Refresh';
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        btn.innerText = '❌ Error!';
+    }
+}
